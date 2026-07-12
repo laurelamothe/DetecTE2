@@ -222,3 +222,4 @@ mkdir -p ${outdir}tmp_merge/famillies/trash
 for i in `ls ${outdir}tmp_merge/famillies/ | grep 'Inter'`; do
   mv ${outdir}tmp_merge/famillies/$i ${outdir}tmp_merge/famillies/trash
 done
+mv -r ${outdir}tmp_merge/famillies/  ${outdir}
