@@ -1,7 +1,4 @@
 #!/bin/bash
-#SBATCH --array=0-0
-
-module load blast/2.14.0
 
 ### Default values for arguments ###
 querydir=""
@@ -58,7 +55,7 @@ fi
 
 
 ### Set the files needed by blast ###
-fastaname=(${querydir}*.fasta)
+fastaname=${querydir}
 outfilename="${outdir}${prefix}_tblastn-$SLURM_ARRAY_TASK_ID.out"
 echo "-db : ${database} "
 echo "-query : ${fastaname[$SLURM_ARRAY_TASK_ID]}  "

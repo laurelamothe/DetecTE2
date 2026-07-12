@@ -11,7 +11,6 @@
 ##################################################################################################################
 ##################################################################################################################
 echo -e "\n$(date +"%Y-%m-%d %H:%M:%S") : starting..."
-module load python blast/2.14.0 mafft/7.407
 
 ##################################################################################################################
 ##################################################################################################################
@@ -165,7 +164,7 @@ job_list=""
 for set in `seq 0 1 $((${dataset_size}-1 ))`; do
   mkdir -p ${outdir}${prefix_list[$set]}
   sed "/^#SBATCH -o/s|/shared.*$|${outdir}${prefix_list[$set]}/Report_detecTE.%j.out|" detecTE.sh  > ${outdir}/${prefix_list[$set]}/tmp_detecTE.sh 
-  job_detecte=$(sbatch -J ${prefix_list[$set]}_detecTE ${outdir}/${prefix_list[$set]}/tmp_detecTE.sh --fasta "${fasta_files[$set]}" --database "${database_list[$set]}" --assembler "${assembler_list[$set]}" --prefix "${prefix_list[$set]}" --outdir "${outdir}${prefix_list[$set]}"  | awk '{print$4}')
+  job_detecte=$(sbatch -o ${outdir}/${prefix_list[$set]}/report_detecTE.out -J ${prefix_list[$set]}_detecTE ${outdir}/${prefix_list[$set]}/tmp_detecTE.sh --fasta "${fasta_files[$set]}" --database "${database_list[$set]}" --assembler "${assembler_list[$set]}" --prefix "${prefix_list[$set]}" --outdir "${outdir}${prefix_list[$set]}"  | awk '{print$4}')
   job_list+="|${job_detecte}"
 done
 job_list=$(echo ${job_list} | cut -c 2-)
@@ -208,7 +207,7 @@ echo -e "$(date +"%Y-%m-%d %H:%M:%S") : done :D"
 
 #### Extracting connected components from blastn (~ TE famillies) ####
 #### writing count_table with number of familly by superfamilly ####
-mkdir -p ${outdir}tmp_merge/famillies/alignment
+mkdir -p ${outdir}tmp_merge/famillies/
 mkdir -p ${outdir}superfamillies
 python connected_component.py --fasta ${outdir}${dataset_name}_trimmed_TE_before_merging.fasta --blast ${outdir}tmp_merge/${dataset_name}_blast_all.out  --outdir ${outdir}tmp_merge/famillies/${dataset_name}_ --prefix ${dataset_name} 
 mv ${outdir}tmp_merge/famillies/${dataset_name}_count_table.csv ${outdir}

@@ -56,7 +56,7 @@ fi
 
 
 ### Set the files needed by blast ###
-fastaname=(${querydir}*.fasta)
+fastaname=${querydir}
 outfilename="${outdir}${prefix}_blastx-$SLURM_ARRAY_TASK_ID.out"
 echo "-db : ${database} "
 echo "-query : ${fastaname[$SLURM_ARRAY_TASK_ID]}  "

@@ -10,7 +10,6 @@
 ##################################################################################################################
 ##################################################################################################################
 ##################################################################################################################
-module load python blast/2.14.0
 
 ##################################################################################################################
 ############                                       ARGUMENTS                                         #############
@@ -97,9 +96,6 @@ echo -e "\n$(date +"%Y-%m-%d %H:%M:%S") : formatting and filtering transcriptome
 python filter_and_format.py --fasta ${fasta} --outdir ${outdir}tmp/ --assembler ${assembler} --prefix ${prefix}
 fasta=${outdir}tmp/${prefix}_all_transcripts.fasta
 mkdir -p ${outdir}tmp/TEdb-split
-dbname="$(basename ${database} | awk -F '.' '{print $1}')"
-seq_number=$(($(grep ">" ${database} | wc -l) / 20 )) 
-python split_seqs.py --fasta ${database} --outdir ${outdir}tmp/TEdb-split/ --prefix ${dbname} --seq_num ${seq_number}
 
 echo -e "$(date +"%Y-%m-%d %H:%M:%S") : Done :D"
 
@@ -111,10 +107,9 @@ echo -e "\n$(date +"%Y-%m-%d %H:%M:%S") : Preparing Tblastn..."
 
 mkdir -p ${outdir}tmp/transcript_index
 makeblastdb -in ${fasta} -dbtype nucl -out ${outdir}tmp/transcript_index/${prefix}_datatblastn
-querynumber=$(ls ${outdir}tmp/TEdb-split | wc -l) ; querynumber=$((${querynumber} - 1 ))
-sed "/^#SBATCH --array=0-0$/s/0-0/0-${querynumber}/" tblastn_det.sh > ${outdir}tmp/tblastn_det_tmp.sh 
 mkdir -p ${outdir}tmp/TBLASTNresults/reports
-job_tblastn=$(sbatch -J ${prefix}_tblastn ${outdir}tmp/tblastn_det_tmp.sh -d ${outdir}tmp/transcript_index/${prefix}_datatblastn -q ${outdir}tmp/TEdb-split/ -o ${outdir}tmp/TBLASTNresults/${prefix} | cut -d " " -f 4)
+sed "/^#SBATCH -o/s|/shared.*$|${outdir}tmp/TBLASTNresults/reports/Report_det_tblastn.%j.out|" tblastn_det.sh > ${outdir}tmp/tblastn_det_tmp.sh 
+job_tblastn=$(sbatch -o ${outdir}tmp/tblastn_report.out -J ${prefix}_tblastn ${outdir}tmp/tblastn_det_tmp.sh -d ${outdir}tmp/transcript_index/${prefix}_datatblastn -q ${database} -o ${outdir}tmp/TBLASTNresults/${prefix} | cut -d " " -f 4)
 
 echo -e "$(date +"%Y-%m-%d %H:%M:%S") : Tblastn running..."
 
@@ -137,8 +132,6 @@ echo -e "\n$(date +"%Y-%m-%d %H:%M:%S") : second filter tblastn hits, splitting 
 
 python second_filter.py --fasta ${fasta} --input ${outdir}tmp/TBLASTNresults/${prefix}_all_TBLASTN.out --prefix ${prefix} --outdir ${outdir}tmp/
 mkdir -p ${outdir}tmp/putative-TE-split
-seq_number=$(($(grep ">" ${outdir}tmp/${prefix}_putative_TE-transcripts.fasta | wc -l) / 20 )) 
-python split_seqs.py --fasta ${outdir}tmp/${prefix}_putative_TE-transcripts.fasta --outdir ${outdir}tmp/putative-TE-split/ --prefix ${prefix}_putative_TE-transcripts --seq_num ${seq_number}
 
 echo -e "$(date +"%Y-%m-%d %H:%M:%S") : Done :D"
 
@@ -152,10 +145,9 @@ echo -e "\n$(date +"%Y-%m-%d %H:%M:%S") : Preparing Blastx..."
 
 mkdir -p ${outdir}tmp/TE_index
 makeblastdb -in ${database} -dbtype prot -out ${outdir}tmp/TE_index/$(basename $database | cut -d "." -f 1)_datablastx
-querynumber=$(ls ${outdir}tmp/putative-TE-split | wc -l) ; querynumber=$((${querynumber} - 1 ))
-sed "/^#SBATCH --array=0-0$/s/0-0/0-${querynumber}/" blastx_det.sh  > ${outdir}tmp/blastx_det_tmp.sh 
+sed "/^#SBATCH -o/s|/shared.*$|${outdir}tmp/BLASTXresults/reports/Report_det_blastx.%j.out|" blastx_det.sh > ${outdir}tmp/blastx_det_tmp.sh 
 mkdir -p ${outdir}tmp/BLASTXresults/reports
-job_blastx=$(sbatch -J ${prefix}_blastx ${outdir}tmp/blastx_det_tmp.sh -d ${outdir}tmp/TE_index/$(basename $database | cut -d "." -f 1)_datablastx -q ${outdir}tmp/putative-TE-split/ -o ${outdir}tmp/BLASTXresults/${prefix} | cut -d " " -f 4)
+job_blastx=$(sbatch -o ${outdir}tmp/blastx_report.out -J ${prefix}_blastx ${outdir}tmp/blastx_det_tmp.sh -d ${outdir}tmp/TE_index/$(basename $database | cut -d "." -f 1)_datablastx -q ${outdir}tmp/${prefix}_putative_TE-transcripts.fasta -o ${outdir}tmp/BLASTXresults/${prefix} | cut -d " " -f 4)
 
 echo -e "$(date +"%Y-%m-%d %H:%M:%S") : Blastx running..."
 
