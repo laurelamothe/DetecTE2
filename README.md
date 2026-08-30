@@ -77,10 +77,6 @@ sbatch DetecTE_main.sh --fasta  /path/to/transcriptome/transcripts.fasta \
 
 You can run the pipeline with the example dataset: 
 ```pgsql
-sbatch DetecTE_main.sh --fasta  /path/to/transcriptome/transcripts.fasta \               
-                       --database /path/to/database/db.fasta \ 
-                       --assembler ASSEMBLER \
-                       --outdir /path/to/output_directory/ \
-                       --prefix prefix 
+sbatch -o ./report.out DetecTE_main.sh --fasta ./test.fasta --database ./db_test.fasta --assembler TRINITY --outdir ./results --prefix test
 ...
 ```
