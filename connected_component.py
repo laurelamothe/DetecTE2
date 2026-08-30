@@ -95,7 +95,11 @@ for component in cc :
 # - fasta by cluster
 # - table with familly counts
 
+<<<<<<< HEAD
 superfamilies = list(pd.read_csv("superfamily_list.txt", index_col=False, skiprows=0, names=['Annot']).Annot)
+=======
+superfamillies = list(pd.read_csv("superfamilly_list.txt", index_col=False, skiprows=0, names=['Annot']).Annot)
+>>>>>>> 240ff64487a463196faacf2189db5ea1f6c2dcf5
 
 
 #### FASTA BY FAMILLY ####
@@ -136,8 +140,13 @@ for i in anotated_clusters :
     famillies.append(code)
 
 count_table = pd.DataFrame({"Order" : [], "Group" : [], "Superfamilly" : [], args.prefix : []})
+<<<<<<< HEAD
 for sf in superfamilies : 
     # fam_count = len(list(filter(lambda fam: fam == sf, famillies)))
     fam_count = famillies.count(sf)
+=======
+for sf in superfamillies : 
+    fam_count = len(list(filter(lambda fam: fam == sf, famillies)))
+>>>>>>> 240ff64487a463196faacf2189db5ea1f6c2dcf5
     count_table = count_table._append({"Order" : sf.split("/")[0], "Group" : sf.split("/")[1], "Superfamilly" : sf.split("/")[2], args.prefix : fam_count}, ignore_index=True)
 count_table.T.to_csv("{}count_table.csv".format(args.outdir), header = False)

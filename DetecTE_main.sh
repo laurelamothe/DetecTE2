@@ -208,6 +208,10 @@ echo -e "$(date +"%Y-%m-%d %H:%M:%S") : done :D"
 #### Extracting connected components from blastn (~ TE famillies) ####
 #### writing count_table with number of familly by superfamilly ####
 mkdir -p ${outdir}tmp_merge/famillies/
+<<<<<<< HEAD
+=======
+mkdir -p ${outdir}superfamillies
+>>>>>>> 240ff64487a463196faacf2189db5ea1f6c2dcf5
 python connected_component.py --fasta ${outdir}${dataset_name}_trimmed_TE_before_merging.fasta --blast ${outdir}tmp_merge/${dataset_name}_blast_all.out  --outdir ${outdir}tmp_merge/famillies/${dataset_name}_ --prefix ${dataset_name} 
 mv ${outdir}tmp_merge/famillies/${dataset_name}_count_table.csv ${outdir}
 for i in `ls ${outdir}tmp_merge/famillies/`; do 
@@ -221,4 +225,8 @@ mkdir -p ${outdir}tmp_merge/famillies/trash
 for i in `ls ${outdir}tmp_merge/famillies/ | grep 'Inter'`; do
   mv ${outdir}tmp_merge/famillies/$i ${outdir}tmp_merge/famillies/trash
 done
+<<<<<<< HEAD
 mv ${outdir}tmp_merge/famillies/  ${outdir}
+=======
+mv -r ${outdir}tmp_merge/famillies/  ${outdir}
+>>>>>>> 240ff64487a463196faacf2189db5ea1f6c2dcf5
