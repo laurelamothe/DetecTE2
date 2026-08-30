@@ -74,3 +74,13 @@ sbatch DetecTE_main.sh --fasta  /path/to/transcriptome/transcripts.fasta \
 - The assembler names should be either SPADES or TRINITY. For multiple transcriptome inputs, enter the assembler name for each transcriptome, in the same order. 
 
 - The prefix is specific to the transcriptome input. For multiple transcriptome inputs, indicate the corresponding number of prefixes.
+
+You can run the pipeline with the example dataset: 
+```pgsql
+sbatch DetecTE_main.sh --fasta  /path/to/transcriptome/transcripts.fasta \               
+                       --database /path/to/database/db.fasta \ 
+                       --assembler ASSEMBLER \
+                       --outdir /path/to/output_directory/ \
+                       --prefix prefix 
+...
+```
